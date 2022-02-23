@@ -2,5 +2,6 @@
 
 [ext_resource path="res://scenes/entities/player/Player.gd" type="Script" id=1]
 
-[node name="Player" type="Node"]
+[node name="Player" type="Node" groups=["network_sync"]]
+process_priority = 10
 script = ExtResource( 1 )

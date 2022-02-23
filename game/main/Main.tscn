@@ -16,7 +16,6 @@ fixed_position_y = 16973824
 position = Vector2( 775, 242 )
 fixed_position_x = 50790400
 fixed_position_y = 15859712
-player_id = 2
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 anchor_right = 1.0

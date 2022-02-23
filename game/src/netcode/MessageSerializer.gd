@@ -6,18 +6,47 @@ enum HeaderFlags {
 }
 
 func get_input_path_mapping(path: NodePath) -> int:
+	var player_1_path: = Players.get_player_by_id(1).get_path()
+	var player_2_path: = Players.get_player_by_id(2).get_path()
+	var player_3_path: = Players.get_player_by_id(3).get_path()
+	var player_4_path: = Players.get_player_by_id(4).get_path()
+	var player_5_path: = Players.get_player_by_id(5).get_path()
+	var player_6_path: = Players.get_player_by_id(6).get_path()
+	var player_7_path: = Players.get_player_by_id(7).get_path()
+	var player_8_path: = Players.get_player_by_id(8).get_path()
+	
 	# 1 - 8
-	if Players.is_player_hockey_player_path(path):
-		return Players.get_player_hockey_player_id_by_path(path)
+	match path:
+		NodePath("$"):
+			return 0
+		player_1_path:
+			return 1
+		player_2_path:
+			return 2
+		player_3_path:
+			return 3
+		player_4_path:
+			return 4
+		player_5_path:
+			return 5
+		player_6_path:
+			return 6
+		player_7_path:
+			return 7
+		player_8_path:
+			return 8
 	
 	return -1
 
 
 func get_input_path_mapping_reverse(id: int) -> NodePath:
-	if id >= 1 and id <= 8:
-		return Players.get_player_hockey_player_path_by_id(id)
-	
-	return NodePath("")
+	match id:
+		0:
+			return NodePath("$")
+		1, 2, 3, 4, 5, 6, 7, 8:
+			return Players.get_player_by_id(id).get_path()
+		_:
+			return NodePath("")
 
 
 func _init() -> void:
