@@ -1,20 +1,27 @@
 extends "res://addons/godot-rollback-netcode/MessageSerializer.gd"
 
-const input_path_mapping: = {
-	"/root/Main/ServerPlayer": 1,
-	"/root/Main/ClientPlayer": 2
-}
-
-const input_path_mapping_reverse: = {}
 
 enum HeaderFlags {
 	HAS_INPUT_VECTOR = 0b00000001
 }
 
+func get_input_path_mapping(path: NodePath) -> int:
+	# 1 - 8
+	if Players.is_player_hockey_player_path(path):
+		return Players.get_player_hockey_player_id_by_path(path)
+	
+	return -1
+
+
+func get_input_path_mapping_reverse(id: int) -> NodePath:
+	if id >= 1 and id <= 8:
+		return Players.get_player_hockey_player_path_by_id(id)
+	
+	return NodePath("")
+
 
 func _init() -> void:
-	for key in input_path_mapping:
-		input_path_mapping_reverse[input_path_mapping[key]] = key
+	pass
 
 
 func serialize_input(all_input: Dictionary) -> PoolByteArray:
@@ -31,7 +38,7 @@ func serialize_input(all_input: Dictionary) -> PoolByteArray:
 		if path == "$":
 			continue
 		
-		buffer.put_u8(input_path_mapping[path])
+		buffer.put_u8(get_input_path_mapping(path))
 		
 		var header: = 0
 		var input = all_input[path]
@@ -42,9 +49,9 @@ func serialize_input(all_input: Dictionary) -> PoolByteArray:
 		buffer.put_u8(header)
 		
 		if input.has("input_vector"):
-			var input_vector: Vector2 = input["input_vector"]
-			buffer.put_float(input_vector.x)
-			buffer.put_float(input_vector.y)
+			var input_vector: SGFixedVector2 = input["input_vector"]
+			buffer.put_64(input_vector.x)
+			buffer.put_64(input_vector.y)
 	
 	buffer.resize(buffer.get_position())
 	return buffer.data_array
@@ -63,12 +70,12 @@ func unserialize_input(serialized: PoolByteArray) -> Dictionary:
 	if input_count == 0:
 		return all_input
 	
-	var path: String = input_path_mapping_reverse[buffer.get_u8()]
+	var path: String = get_input_path_mapping_reverse(buffer.get_u8())
 	var input: = {}
 	
 	var header: = buffer.get_u8()
 	if header & HeaderFlags.HAS_INPUT_VECTOR:
-		input["input_vector"] = Vector2(buffer.get_float(), buffer.get_float())
+		input["input_vector"] = SGFixed.vector2(buffer.get_64(), buffer.get_64())
 	
 	all_input[path] = input
 	

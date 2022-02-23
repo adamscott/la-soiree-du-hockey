@@ -2,20 +2,21 @@
 
 [ext_resource path="res://main/Main.gd" type="Script" id=1]
 [ext_resource path="res://scenes/menus/network/NetworkMenu.tscn" type="PackedScene" id=2]
-[ext_resource path="res://scenes/entities/player/Player.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/entities/hockey_player/HockeyPlayer.tscn" type="PackedScene" id=3]
 
 [node name="Main" type="Node"]
 script = ExtResource( 1 )
 
-[node name="ServerPlayer" parent="." instance=ExtResource( 3 )]
+[node name="Player1" parent="." instance=ExtResource( 3 )]
 position = Vector2( 254, 259 )
 fixed_position_x = 16646144
 fixed_position_y = 16973824
 
-[node name="ClientPlayer" parent="." instance=ExtResource( 3 )]
+[node name="Player2" parent="." instance=ExtResource( 3 )]
 position = Vector2( 775, 242 )
 fixed_position_x = 50790400
 fixed_position_y = 15859712
+player_id = 2
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 anchor_right = 1.0
