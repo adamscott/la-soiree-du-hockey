@@ -2,5 +2,5 @@
 
 [ext_resource path="res://autoload/peer_manager/PeerManager.gd" type="Script" id=1]
 
-[node name="Peer" type="Node"]
+[node name="PeerManager" type="Node"]
 script = ExtResource( 1 )

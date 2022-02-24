@@ -15,6 +15,14 @@ func _on_server_disconnected() -> void:
 
 func _on_SyncManager_sync_started() -> void:
 	Console.write_line("Sync started!")
+	
+	var peer_id: = get_tree().get_network_unique_id()
+	match peer_id:
+		1:
+			SyncManager.start_logging("res://peer_server.log")
+		_:
+			SyncManager.start_logging("res://peer_client.log")
+	
 
 
 func _on_SyncManager_sync_stopped() -> void:
@@ -65,6 +73,8 @@ func add_peer(peer_id: int) -> void:
 	
 	if get_tree().is_network_server():
 		start_server()
+	elif peer_id == get_tree().get_network_unique_id():
+		SyncManager.start_logging("res://client.log")
 
 
 func remove_peer(peer_id: int) -> void:
@@ -88,5 +98,6 @@ func clear_peers() -> void:
 
 func reset_connection() -> void:
 	SyncManager.stop()
+	SyncManager.stop_logging()
 	clear_peers()
 	get_tree().reload_current_scene()
