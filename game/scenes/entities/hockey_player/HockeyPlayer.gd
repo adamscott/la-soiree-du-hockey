@@ -42,16 +42,7 @@ func _network_process(input: Dictionary) -> void:
 		new_length = 0
 	
 	velocity = velocity.normalized().mul(new_length)
-	
-	# Does not work
-	#velocity = move_and_slide(velocity)
-	# Or
-	#move_and_collide(velocity)
-	
-	# Does work
-	fixed_position = fixed_position.add(velocity)
-	sync_to_physics_engine()
-	
+	velocity = move_and_slide(velocity)
 	
 	update_state_machines()
 	Console.write_line("network process end")
@@ -92,6 +83,8 @@ func _load_state(state: Dictionary) -> void:
 	has_puck = state["has_puck"]
 	
 	reset_state_machines(state)
+	
+	sync_to_physics_engine()
 
 
 func update_state_machines() -> void:
