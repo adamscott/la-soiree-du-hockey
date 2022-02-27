@@ -1,9 +1,13 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://main/Main.gd" type="Script" id=1]
 [ext_resource path="res://scenes/menus/network/NetworkMenu.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scenes/entities/hockey_player/HockeyPlayer.tscn" type="PackedScene" id=3]
 [ext_resource path="res://scenes/entities/hockey_puck/HockeyPuck.tscn" type="PackedScene" id=4]
+
+[sub_resource type="SGRectangleShape2D" id=1]
+extents_x = 2097152
+extents_y = 42074112
 
 [node name="Main" type="Node"]
 script = ExtResource( 1 )
@@ -37,3 +41,42 @@ margin_left = 362.0
 margin_top = 220.0
 margin_right = 662.0
 margin_bottom = 380.0
+
+[node name="SGStaticBody2D" type="SGStaticBody2D" parent="."]
+position = Vector2( 1, 303 )
+fixed_position_x = 65536
+fixed_position_y = 19857408
+collision_mask = 7
+
+[node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="SGStaticBody2D"]
+shape = SubResource( 1 )
+
+[node name="SGStaticBody2D2" type="SGStaticBody2D" parent="."]
+position = Vector2( 1020, 299 )
+fixed_position_x = 66846720
+fixed_position_y = 19595264
+collision_mask = 7
+
+[node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="SGStaticBody2D2"]
+shape = SubResource( 1 )
+
+[node name="SGStaticBody2D3" type="SGStaticBody2D" parent="."]
+position = Vector2( 514, 0 )
+rotation = 1.57079
+fixed_rotation = 102943
+fixed_position_x = 33685504
+collision_mask = 7
+
+[node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="SGStaticBody2D3"]
+shape = SubResource( 1 )
+
+[node name="SGStaticBody2D4" type="SGStaticBody2D" parent="."]
+position = Vector2( 493, 602 )
+rotation = 1.57079
+fixed_rotation = 102943
+fixed_position_x = 32309248
+fixed_position_y = 39452672
+collision_mask = 7
+
+[node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="SGStaticBody2D4"]
+shape = SubResource( 1 )

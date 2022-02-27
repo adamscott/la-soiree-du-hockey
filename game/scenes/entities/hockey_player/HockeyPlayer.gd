@@ -9,28 +9,34 @@ var current_player: Player
 var hockey_puck: HockeyPuck
 var friction: int
 var velocity: SGFixedVector2 = SGFixed.from_float_vector2(Vector2.ZERO)
-var direction: String = "north"
+var acceleration: SGFixedVector2 = SGFixed.from_float_vector2(Vector2.ZERO)
+var direction: String = "n"
 
-var active: = true
+var move_sm_stack: Array = []
+var play_type_sm_stack: Array = []
+var offense_sm_stack: Array = []
+var offense_sm_active: bool = false
 
 onready var hockey: SGFixedNode2D = $Hockey
-onready var hockey_area: SGArea2D = $Hockey/Area
 
-onready var main_sm: StateMachinePlayer = $StateMachines/MainStateMachine
+onready var puck_position: SGFixedPosition2D = $Hockey/PuckPosition
+onready var puck_area: SGArea2D = $PuckArea
+
+onready var move_sm: StateMachinePlayer = $StateMachines/MoveStateMachine
 onready var play_type_sm: StateMachinePlayer = $StateMachines/PlayTypeStateMachine
 onready var offense_sm: StateMachinePlayer = $StateMachines/OffenseStateMachine
 
 onready var pass_timer: NetworkTimer = $Timers/PassTimer
 
-onready var nat: NetworkAnimationPlayer = $NetworkAnimationPlayer
+onready var animation_player: NetworkAnimationPlayer = $NetworkAnimationPlayer
 
 
-func _on_MainStateMachine_transited(from, to) -> void:
+func _on_MoveStateMachine_transited(from, to) -> void:
 	match to:
 		"Idle":
 			pass
 		"Active":
-			play_type_sm.restart()
+			pass
 
 
 func _on_PlayTypeStateMachine_transited(from, to) -> void:
@@ -46,7 +52,7 @@ func _on_OffenseStateMachine_transited(from, to) -> void:
 		"Pass":
 			pass_timer.start()
 			hockey_puck.current_hockey_player = null
-			hockey_puck.velocity = velocity
+			hockey_puck.velocity = velocity.mul(SGFixed.from_int(3))
 
 
 func _on_PassTimer_timeout() -> void:
@@ -58,12 +64,8 @@ func _ready() -> void:
 
 
 func _network_process(input: Dictionary) -> void:
-	match main_sm.get_current():
-		"Active":
-			update_position()
-		"Idle":
-			pass
-	
+	backup_state_machines_stack()
+	update_position()
 	update_overlapping_bodies()
 	
 	if get_input().has("pass"):
@@ -80,21 +82,26 @@ func _save_state() -> Dictionary:
 		"velocity_x": velocity.x,
 		"velocity_y": velocity.y,
 		"direction": direction,
-		"main_stack": main_sm.stack,
-		"active": active
+		"move_stack": move_sm_stack,
+		"play_type_stack": play_type_sm_stack,
+		"offense_stack": offense_sm_stack,
+		"offense_sm_active": offense_sm_active
 	}
+	
+	
+	if velocity != SGFixed.from_float_vector2(Vector2.ZERO):
+		state["velocity_x"] = velocity.x
+		state["velocity_y"] = velocity.y
+	
+	if acceleration != SGFixed.from_float_vector2(Vector2.ZERO):
+		state["acceleration_x"] = acceleration.x
+		state["acceleration_y"] = acceleration.y
 	
 	if current_player:
 		state["current_player"] = current_player.get_path()
 	
 	if hockey_puck:
 		state["hockey_puck"] = hockey_puck.get_path()
-	
-	if play_type_sm.active:
-		state["play_type_stack"] = play_type_sm.stack
-	
-	if offense_sm.active:
-		state["offense_stack"] = offense_sm.stack
 	
 	return state
 
@@ -103,7 +110,21 @@ func _load_state(state: Dictionary) -> void:
 	fixed_position = SGFixed.vector2(state["fixed_position_x"], state["fixed_position_y"])
 	hockey.update_float_transform()
 	direction = state["direction"]
-	velocity = SGFixed.vector2(state["velocity_x"], state["velocity_y"])
+	
+	move_sm.stack = state["move_stack"]
+	play_type_sm.stack = state["play_type_stack"]
+	offense_sm.stack = state["offense_stack"]
+	offense_sm.active = state["offense_sm_active"]
+	
+	if state.has("velocity_x"):
+		velocity = SGFixed.vector2(state["velocity_x"], state["velocity_y"])
+	else:
+		velocity = SGFixed.from_float_vector2(Vector2.ZERO)
+	
+	if state.has("acceleration_x"):
+		acceleration = SGFixed.vector2(state["acceleration_x"], state["acceleration_y"])
+	else:
+		acceleration = SGFixed.from_float_vector2(Vector2.ZERO)
 	
 	if state.has("current_player"):
 		current_player = get_node(state["current_player"]) as Player
@@ -115,35 +136,26 @@ func _load_state(state: Dictionary) -> void:
 	else:
 		hockey_puck = null
 	
-	if state.has("play_type_stack"):
-		play_type_sm.stack = state["play_type_stack"]
-		play_type_sm.active = true
-	else:
-		play_type_sm.active = false
-	
-	if state.has("offense_stack"):
-		offense_sm.stack = state["offense_stack"]
-	else:
-		offense_sm.active = false
-	
-	active = state["active"]
-	
 	update_state_machines()
 	
-	sync_to_physics_engine()
-	hockey_area.sync_to_physics_engine()
+	sync_to_physics()
+
+
+func backup_state_machines_stack() -> void:
+	move_sm_stack = move_sm.stack
+	play_type_sm_stack = play_type_sm.stack
+	
+	if offense_sm.active:
+		offense_sm_stack = offense_sm.stack
+	else:
+		offense_sm_stack = []
+	
+	offense_sm_active = offense_sm.active
 
 
 func update_state_machines() -> void:
-	if not main_sm.active:
-		main_sm.restart()
-		main_sm.update()
-		
-	main_sm.set_param("active", active)
-	main_sm.update()
-	
+	move_sm.set_param("velocity_length_squared", velocity.length_squared())
 	play_type_sm.set_param("has_puck", hockey_puck != null)
-	play_type_sm.update()
 	
 	offense_sm.update()
 
@@ -158,9 +170,6 @@ func update_position() -> void:
 		Console.write_line("player input has not input_vector")
 		return
 	
-	# var current_vector = hockey.fixed_transform.x.normalized()
-	# prints("current_vector", current_vector.x, current_vector.y)
-	
 	var current_vector: SGFixedVector2
 	if velocity.normalized().length_squared() > 0:
 		current_vector = velocity.normalized()
@@ -168,21 +177,21 @@ func update_position() -> void:
 		var up: = SGFixed.vector2(SGFixed.from_int(0), SGFixed.from_int(1))
 		
 		match direction:
-			"north":
+			"n":
 				current_vector = up
-			"north_east":
+			"ne":
 				current_vector = up.rotated(SGFixed.PI_DIV_4)
-			"north_west":
+			"nw":
 				current_vector = up.rotated(-SGFixed.PI_DIV_4)
-			"east":
+			"e":
 				current_vector = up.rotated(SGFixed.PI_DIV_2)
-			"west":
+			"w":
 				current_vector = up.rotated(-SGFixed.PI_DIV_2)
-			"south_east":
+			"se":
 				current_vector = up.rotated(SGFixed.PI_DIV_2 + SGFixed.PI_DIV_4)
-			"south_west":
+			"sw":
 				current_vector = up.rotated(-SGFixed.PI_DIV_2 - SGFixed.PI_DIV_4)
-			"south":
+			"s", _:
 				current_vector = up.rotated(SGFixed.PI)
 		
 		current_vector = current_vector.rotated(SGFixed.PI)
@@ -209,40 +218,37 @@ func update_position() -> void:
 	if abs(angle_to_y) > SGFixed.PI:
 		angle_to_y = SGFixed.PI - angle_to_y
 	
-	var new_direction: String
 	if abs(angle_to_y) < SGFixed.PI_DIV_4 / 2:
 		# new_direction = "north"
-		new_direction = "south"
+		direction = "s"
 	elif abs(angle_to_y) < SGFixed.PI_DIV_4 + (SGFixed.PI_DIV_4 / 2):
 		if angle_to_y > 0:
 			# new_direction = "north_east"
-			new_direction = "south_west"
+			direction = "sw"
 		else:
 			#new_direction = "north_west"
-			new_direction = "south_east"
+			direction = "se"
 	elif abs(angle_to_y) < SGFixed.PI_DIV_2 + (SGFixed.PI_DIV_4 / 2):
 		if angle_to_y > 0:
 			# new_direction = "east"
-			new_direction = "west"
+			direction = "w"
 		else:
 			# new_direction = "west"
-			new_direction = "east"
+			direction = "e"
 	elif abs(angle_to_y) < SGFixed.PI_DIV_2 + SGFixed.PI_DIV_4 + (SGFixed.PI_DIV_4 / 2):
 		if angle_to_y > 0:
 			# new_direction = "south_east"
-			new_direction = "north_west"
+			direction = "nw"
 		else:
 			# new_direction = "south_west"
-			new_direction = "north_east"
+			direction = "ne"
 	else:
 		# new_direction = "south"
-		new_direction = "north"
+		direction = "n"
 	
-	if new_direction != direction:
-		nat.play(new_direction)
-		direction = new_direction
+	update_animation()
 	
-	var acceleration: SGFixedVector2 = player_input["input_vector"].mul(SGFixed.from_int(2))
+	acceleration = player_input["input_vector"].mul(SGFixed.from_int(2))
 	velocity = velocity.add(acceleration)
 	
 	var new_length: = velocity.length()
@@ -256,16 +262,16 @@ func update_position() -> void:
 	if hockey_puck and hockey_puck.current_hockey_player == self:
 		hockey_puck.set_global_fixed_position(
 			hockey_puck.get_global_fixed_position().linear_interpolate(
-				hockey_area.get_global_fixed_position(),
+				puck_position.get_global_fixed_position(),
 				32770  # 0.5
 			)
 		)
 
 
 func update_overlapping_bodies() -> void:
-	hockey_area.sync_to_physics_engine()
+	puck_area.sync_to_physics_engine()
 	
-	var overlapping_bodies: = hockey_area.get_overlapping_bodies()
+	var overlapping_bodies: = puck_area.get_overlapping_bodies()
 	for overlapping_body in overlapping_bodies:
 		if overlapping_body is HockeyPuck:
 			if offense_sm.active and offense_sm.get_current() == "Pass":
@@ -274,10 +280,40 @@ func update_overlapping_bodies() -> void:
 			hockey_puck = overlapping_body
 
 
+func update_animation() -> void:
+	var prefix: String
+	match move_sm.get_current():
+		"Moving":
+			prefix = "moving"
+		"Idle", _:
+			prefix = "idle"
+			
+	match play_type_sm.get_current():
+		"Defense":
+			var target_animation: String = "%s_defense_%s" % [prefix, direction]
+			if animation_player.current_animation != target_animation:
+				animation_player.play(target_animation)
+		"Offense":
+			match offense_sm.get_current():
+				"Idle":
+					var target_animation: String = "%s_offense_%s" % [prefix, direction]
+					if animation_player.current_animation != target_animation:
+						animation_player.play(target_animation)
+				"Pass":
+					var target_animation: String = "%s_pass_%s" % [prefix, direction]
+					if animation_player.current_animation != target_animation:
+						animation_player.play(target_animation)
+
+
 func normalize_angle(radians: int) -> int:
 	if abs(radians) > (SGFixed.PI_DIV_2):
 		return SGFixed.TAU - radians
 	return radians
+
+
+func sync_to_physics() -> void:
+	sync_to_physics_engine()
+	puck_area.sync_to_physics_engine()
 
 
 func get_input() -> Dictionary:

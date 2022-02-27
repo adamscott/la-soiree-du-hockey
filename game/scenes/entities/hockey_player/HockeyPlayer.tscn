@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=2]
+[gd_scene load_steps=70 format=2]
 
 [ext_resource path="res://scenes/entities/hockey_player/HockeyPlayer.gd" type="Script" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
@@ -10,20 +10,10 @@
 [ext_resource path="res://addons/godot-rollback-netcode/NetworkAnimationPlayer.gd" type="Script" id=8]
 [ext_resource path="res://addons/imjp94.yafsm/src/conditions/Condition.gd" type="Script" id=9]
 [ext_resource path="res://addons/godot-rollback-netcode/NetworkTimer.gd" type="Script" id=10]
-
-[sub_resource type="SGRectangleShape2D" id=24]
-extents_x = 524288
-extents_y = 1179648
+[ext_resource path="res://addons/imjp94.yafsm/src/conditions/ExpressionCondition.gd" type="Script" id=11]
 
 [sub_resource type="SGCircleShape2D" id=23]
 radius = 2097152
-
-[sub_resource type="Resource" id=12]
-script = ExtResource( 5 )
-__meta__ = {
-"graph_offset": Vector2( 568, -20 )
-}
-name = "Active"
 
 [sub_resource type="Resource" id=1]
 script = ExtResource( 5 )
@@ -39,20 +29,12 @@ __meta__ = {
 }
 name = "Idle"
 
-[sub_resource type="Resource" id=22]
-script = ExtResource( 7 )
-name = "active"
-comparation = 0
-value = false
-
-[sub_resource type="Resource" id=15]
-script = ExtResource( 3 )
-from = "Active"
-to = "Idle"
-conditions = {
-"active": SubResource( 22 )
+[sub_resource type="Resource" id=12]
+script = ExtResource( 5 )
+__meta__ = {
+"graph_offset": Vector2( 568, -20 )
 }
-priority = 0
+name = "Moving"
 
 [sub_resource type="Resource" id=13]
 script = ExtResource( 3 )
@@ -62,18 +44,29 @@ conditions = {
 }
 priority = 0
 
-[sub_resource type="Resource" id=21]
-script = ExtResource( 7 )
-name = "active"
-comparation = 0
-value = true
+[sub_resource type="Resource" id=51]
+script = ExtResource( 11 )
+name = "velocity_length_squared > 0"
 
-[sub_resource type="Resource" id=14]
+[sub_resource type="Resource" id=52]
 script = ExtResource( 3 )
 from = "Idle"
-to = "Active"
+to = "Moving"
 conditions = {
-"active": SubResource( 21 )
+"velocity_length_squared > 0": SubResource( 51 )
+}
+priority = 0
+
+[sub_resource type="Resource" id=50]
+script = ExtResource( 11 )
+name = "velocity_length_squared <= 0"
+
+[sub_resource type="Resource" id=15]
+script = ExtResource( 3 )
+from = "Moving"
+to = "Idle"
+conditions = {
+"velocity_length_squared <= 0": SubResource( 50 )
 }
 priority = 0
 
@@ -81,19 +74,19 @@ priority = 0
 script = ExtResource( 6 )
 name = ""
 states = {
-"Active": SubResource( 12 ),
 "Entry": SubResource( 1 ),
-"Idle": SubResource( 11 )
+"Idle": SubResource( 11 ),
+"Moving": SubResource( 12 )
 }
 transitions = {
-"Active": {
-"Idle": SubResource( 15 )
-},
 "Entry": {
 "Idle": SubResource( 13 )
 },
 "Idle": {
-"Active": SubResource( 14 )
+"Moving": SubResource( 52 )
+},
+"Moving": {
+"Idle": SubResource( 15 )
 }
 }
 
@@ -243,8 +236,128 @@ tracks/0/keys = {
 "values": [ 0 ]
 }
 
-[sub_resource type="Animation" id=27]
-resource_name = "east"
+[sub_resource type="Animation" id=53]
+resource_name = "idle_defense_e"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=57]
+resource_name = "idle_defense_n"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=58]
+resource_name = "idle_defense_ne"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=59]
+resource_name = "idle_defense_nw"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=60]
+resource_name = "idle_defense_s"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=56]
+resource_name = "idle_defense_se"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=55]
+resource_name = "idle_defense_sw"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=54]
+resource_name = "idle_defense_w"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=61]
+resource_name = "idle_offense_e"
 tracks/0/type = "value"
 tracks/0/path = NodePath("Hockey:fixed_rotation")
 tracks/0/interp = 1
@@ -257,9 +370,21 @@ tracks/0/keys = {
 "update": 1,
 "values": [ 102943 ]
 }
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
 
-[sub_resource type="Animation" id=25]
-resource_name = "north"
+[sub_resource type="Animation" id=62]
+resource_name = "idle_offense_n"
 tracks/0/type = "value"
 tracks/0/path = NodePath("Hockey:fixed_rotation")
 tracks/0/interp = 1
@@ -272,9 +397,21 @@ tracks/0/keys = {
 "update": 1,
 "values": [ 0 ]
 }
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
 
-[sub_resource type="Animation" id=28]
-resource_name = "north_east"
+[sub_resource type="Animation" id=63]
+resource_name = "idle_offense_ne"
 tracks/0/type = "value"
 tracks/0/path = NodePath("Hockey:fixed_rotation")
 tracks/0/interp = 1
@@ -287,9 +424,21 @@ tracks/0/keys = {
 "update": 1,
 "values": [ 51471 ]
 }
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
 
-[sub_resource type="Animation" id=30]
-resource_name = "north_west"
+[sub_resource type="Animation" id=64]
+resource_name = "idle_offense_nw"
 tracks/0/type = "value"
 tracks/0/path = NodePath("Hockey:fixed_rotation")
 tracks/0/interp = 1
@@ -302,9 +451,21 @@ tracks/0/keys = {
 "update": 1,
 "values": [ -51471 ]
 }
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
 
-[sub_resource type="Animation" id=31]
-resource_name = "south"
+[sub_resource type="Animation" id=65]
+resource_name = "idle_offense_s"
 tracks/0/type = "value"
 tracks/0/path = NodePath("Hockey:fixed_rotation")
 tracks/0/interp = 1
@@ -317,9 +478,21 @@ tracks/0/keys = {
 "update": 1,
 "values": [ 205886 ]
 }
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
 
-[sub_resource type="Animation" id=29]
-resource_name = "south_east"
+[sub_resource type="Animation" id=66]
+resource_name = "idle_offense_se"
 tracks/0/type = "value"
 tracks/0/path = NodePath("Hockey:fixed_rotation")
 tracks/0/interp = 1
@@ -332,9 +505,21 @@ tracks/0/keys = {
 "update": 1,
 "values": [ 154414 ]
 }
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
 
-[sub_resource type="Animation" id=32]
-resource_name = "south_west"
+[sub_resource type="Animation" id=67]
+resource_name = "idle_offense_sw"
 tracks/0/type = "value"
 tracks/0/path = NodePath("Hockey:fixed_rotation")
 tracks/0/interp = 1
@@ -347,9 +532,21 @@ tracks/0/keys = {
 "update": 1,
 "values": [ -154414 ]
 }
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
 
-[sub_resource type="Animation" id=33]
-resource_name = "west"
+[sub_resource type="Animation" id=68]
+resource_name = "idle_offense_w"
 tracks/0/type = "value"
 tracks/0/path = NodePath("Hockey:fixed_rotation")
 tracks/0/interp = 1
@@ -362,8 +559,358 @@ tracks/0/keys = {
 "update": 1,
 "values": [ -102943 ]
 }
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=41]
+resource_name = "moving_defense_e"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=42]
+resource_name = "moving_defense_n"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=43]
+resource_name = "moving_defense_ne"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=44]
+resource_name = "moving_defense_nw"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=45]
+resource_name = "moving_defense_s"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=46]
+resource_name = "moving_defense_se"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=47]
+resource_name = "moving_defense_sw"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=48]
+resource_name = "moving_defense_w"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=27]
+resource_name = "moving_offense_e"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 102943 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=25]
+resource_name = "moving_offense_n"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=28]
+resource_name = "moving_offense_ne"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 51471 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=30]
+resource_name = "moving_offense_nw"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ -51471 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=31]
+resource_name = "moving_offense_s"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 205886 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=29]
+resource_name = "moving_offense_se"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 154414 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=32]
+resource_name = "moving_offense_sw"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ -154414 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=33]
+resource_name = "moving_offense_w"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ -102943 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
 
 [node name="HockeyPlayer" type="SGKinematicBody2D" groups=["network_sync"]]
+collision_layer = 4
+collision_mask = 5
 script = ExtResource( 1 )
 
 [node name="Icon" type="Sprite" parent="."]
@@ -377,30 +924,31 @@ fixed_scale_y = 65535
 [node name="Hockey" type="Polygon2D" parent="Hockey"]
 polygon = PoolVector2Array( -5, -5, -5, -68, -3, -87, 5, -86, 7, -68, 5, -4 )
 
-[node name="Area" type="SGArea2D" parent="Hockey"]
-position = Vector2( 1, -68 )
-fixed_position_x = 65536
-fixed_position_y = -4456448
-collision_mask = 2
-
-[node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="Hockey/Area"]
-shape = SubResource( 24 )
+[node name="PuckPosition" type="SGFixedPosition2D" parent="Hockey"]
+position = Vector2( 2.12222, -67.1761 )
+fixed_position_x = 139082
+fixed_position_y = -4402456
 
 [node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="."]
 shape = SubResource( 23 )
 
+[node name="PuckArea" type="SGArea2D" parent="."]
+collision_layer = 4
+collision_mask = 2
+
+[node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="PuckArea"]
+shape = SubResource( 23 )
+
 [node name="StateMachines" type="Node" parent="."]
 
-[node name="MainStateMachine" type="Node" parent="StateMachines"]
+[node name="MoveStateMachine" type="Node" parent="StateMachines"]
 script = ExtResource( 4 )
 state_machine = SubResource( 10 )
-active = false
 process_mode = 2
 
 [node name="PlayTypeStateMachine" type="Node" parent="StateMachines"]
 script = ExtResource( 4 )
 state_machine = SubResource( 4 )
-active = false
 process_mode = 2
 
 [node name="OffenseStateMachine" type="Node" parent="StateMachines"]
@@ -418,17 +966,41 @@ wait_ticks = 5
 
 [node name="NetworkAnimationPlayer" type="AnimationPlayer" parent="."]
 anims/RESET = SubResource( 26 )
-anims/east = SubResource( 27 )
-anims/north = SubResource( 25 )
-anims/north_east = SubResource( 28 )
-anims/north_west = SubResource( 30 )
-anims/south = SubResource( 31 )
-anims/south_east = SubResource( 29 )
-anims/south_west = SubResource( 32 )
-anims/west = SubResource( 33 )
+anims/idle_defense_e = SubResource( 53 )
+anims/idle_defense_n = SubResource( 57 )
+anims/idle_defense_ne = SubResource( 58 )
+anims/idle_defense_nw = SubResource( 59 )
+anims/idle_defense_s = SubResource( 60 )
+anims/idle_defense_se = SubResource( 56 )
+anims/idle_defense_sw = SubResource( 55 )
+anims/idle_defense_w = SubResource( 54 )
+anims/idle_offense_e = SubResource( 61 )
+anims/idle_offense_n = SubResource( 62 )
+anims/idle_offense_ne = SubResource( 63 )
+anims/idle_offense_nw = SubResource( 64 )
+anims/idle_offense_s = SubResource( 65 )
+anims/idle_offense_se = SubResource( 66 )
+anims/idle_offense_sw = SubResource( 67 )
+anims/idle_offense_w = SubResource( 68 )
+anims/moving_defense_e = SubResource( 41 )
+anims/moving_defense_n = SubResource( 42 )
+anims/moving_defense_ne = SubResource( 43 )
+anims/moving_defense_nw = SubResource( 44 )
+anims/moving_defense_s = SubResource( 45 )
+anims/moving_defense_se = SubResource( 46 )
+anims/moving_defense_sw = SubResource( 47 )
+anims/moving_defense_w = SubResource( 48 )
+anims/moving_offense_e = SubResource( 27 )
+anims/moving_offense_n = SubResource( 25 )
+anims/moving_offense_ne = SubResource( 28 )
+anims/moving_offense_nw = SubResource( 30 )
+anims/moving_offense_s = SubResource( 31 )
+anims/moving_offense_se = SubResource( 29 )
+anims/moving_offense_sw = SubResource( 32 )
+anims/moving_offense_w = SubResource( 33 )
 script = ExtResource( 8 )
 
-[connection signal="transited" from="StateMachines/MainStateMachine" to="." method="_on_MainStateMachine_transited"]
+[connection signal="transited" from="StateMachines/MoveStateMachine" to="." method="_on_MoveStateMachine_transited"]
 [connection signal="transited" from="StateMachines/PlayTypeStateMachine" to="." method="_on_PlayTypeStateMachine_transited"]
 [connection signal="transited" from="StateMachines/OffenseStateMachine" to="." method="_on_OffenseStateMachine_transited"]
 [connection signal="timeout" from="Timers/PassTimer" to="." method="_on_PassTimer_timeout"]

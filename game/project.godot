@@ -358,6 +358,12 @@ pass_joy7={
  ]
 }
 
+[layer_names]
+
+2d_physics/layer_1="world"
+2d_physics/layer_2="puck"
+2d_physics/layer_3="players"
+
 [network]
 
 rollback/classes/message_serializer="res://src/netcode/MessageSerializer.gd"
