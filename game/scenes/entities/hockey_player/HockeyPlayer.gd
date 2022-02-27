@@ -252,6 +252,14 @@ func update_position() -> void:
 	
 	velocity = velocity.normalized().mul(new_length)
 	velocity = move_and_slide(velocity)
+	
+	if hockey_puck and hockey_puck.current_hockey_player == self:
+		hockey_puck.set_global_fixed_position(
+			hockey_puck.get_global_fixed_position().linear_interpolate(
+				hockey_area.get_global_fixed_position(),
+				32770  # 0.5
+			)
+		)
 
 
 func update_overlapping_bodies() -> void:

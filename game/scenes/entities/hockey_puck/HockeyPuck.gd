@@ -52,7 +52,6 @@ func _load_state(state: Dictionary) -> void:
 
 
 func process_hockey_player() -> void:
-	set_global_fixed_position(current_hockey_player.hockey_area.get_global_fixed_position())
 	sync_to_physics_engine()
 
 
