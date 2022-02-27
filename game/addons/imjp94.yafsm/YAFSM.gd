@@ -1,6 +1,7 @@
 # Node
 const StackPlayer = preload("src/StackPlayer.gd")
 const StateMachinePlayer = preload("src/StateMachinePlayer.gd")
+const NetworkStateMachinePlayer = preload("src/NetworkStateMachinePlayer.gd")
 
 # Reference
 const StateDirectory = preload("src/StateDirectory.gd")

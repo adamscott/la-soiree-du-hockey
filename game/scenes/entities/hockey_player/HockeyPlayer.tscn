@@ -1,9 +1,8 @@
-[gd_scene load_steps=70 format=2]
+[gd_scene load_steps=78 format=2]
 
 [ext_resource path="res://scenes/entities/hockey_player/HockeyPlayer.gd" type="Script" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
 [ext_resource path="res://addons/imjp94.yafsm/src/transitions/Transition.gd" type="Script" id=3]
-[ext_resource path="res://addons/imjp94.yafsm/src/StateMachinePlayer.gd" type="Script" id=4]
 [ext_resource path="res://addons/imjp94.yafsm/src/states/State.gd" type="Script" id=5]
 [ext_resource path="res://addons/imjp94.yafsm/src/states/StateMachine.gd" type="Script" id=6]
 [ext_resource path="res://addons/imjp94.yafsm/src/conditions/BooleanCondition.gd" type="Script" id=7]
@@ -11,6 +10,7 @@
 [ext_resource path="res://addons/imjp94.yafsm/src/conditions/Condition.gd" type="Script" id=9]
 [ext_resource path="res://addons/godot-rollback-netcode/NetworkTimer.gd" type="Script" id=10]
 [ext_resource path="res://addons/imjp94.yafsm/src/conditions/ExpressionCondition.gd" type="Script" id=11]
+[ext_resource path="res://addons/imjp94.yafsm/src/NetworkStateMachinePlayer.gd" type="Script" id=12]
 
 [sub_resource type="SGCircleShape2D" id=23]
 radius = 2097152
@@ -908,6 +908,222 @@ tracks/1/keys = {
 "values": [ true ]
 }
 
+[sub_resource type="Animation" id=69]
+resource_name = "pass_e"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 102943 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=70]
+resource_name = "pass_n"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=71]
+resource_name = "pass_ne"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 51471 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=72]
+resource_name = "pass_nw"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ -51471 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=73]
+resource_name = "pass_s"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 205886 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=74]
+resource_name = "pass_se"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 154414 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=75]
+resource_name = "pass_sw"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ -154414 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=76]
+resource_name = "pass_w"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hockey:fixed_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ -102943 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hockey:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
 [node name="HockeyPlayer" type="SGKinematicBody2D" groups=["network_sync"]]
 collision_layer = 4
 collision_mask = 5
@@ -942,19 +1158,18 @@ shape = SubResource( 23 )
 [node name="StateMachines" type="Node" parent="."]
 
 [node name="MoveStateMachine" type="Node" parent="StateMachines"]
-script = ExtResource( 4 )
+script = ExtResource( 12 )
 state_machine = SubResource( 10 )
 process_mode = 2
 
 [node name="PlayTypeStateMachine" type="Node" parent="StateMachines"]
-script = ExtResource( 4 )
+script = ExtResource( 12 )
 state_machine = SubResource( 4 )
 process_mode = 2
 
 [node name="OffenseStateMachine" type="Node" parent="StateMachines"]
-script = ExtResource( 4 )
+script = ExtResource( 12 )
 state_machine = SubResource( 40 )
-active = false
 process_mode = 2
 
 [node name="Timers" type="Node" parent="."]
@@ -998,6 +1213,14 @@ anims/moving_offense_s = SubResource( 31 )
 anims/moving_offense_se = SubResource( 29 )
 anims/moving_offense_sw = SubResource( 32 )
 anims/moving_offense_w = SubResource( 33 )
+anims/pass_e = SubResource( 69 )
+anims/pass_n = SubResource( 70 )
+anims/pass_ne = SubResource( 71 )
+anims/pass_nw = SubResource( 72 )
+anims/pass_s = SubResource( 73 )
+anims/pass_se = SubResource( 74 )
+anims/pass_sw = SubResource( 75 )
+anims/pass_w = SubResource( 76 )
 script = ExtResource( 8 )
 
 [connection signal="transited" from="StateMachines/MoveStateMachine" to="." method="_on_MoveStateMachine_transited"]

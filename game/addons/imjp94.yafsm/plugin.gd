@@ -3,6 +3,7 @@ extends EditorPlugin
 const YAFSM = preload("YAFSM.gd")
 const StackPlayer = YAFSM.StackPlayer
 const StateMachinePlayer = YAFSM.StateMachinePlayer
+const NetworkStateMachinePlayer = YAFSM.NetworkStateMachinePlayer
 const StateMachine = YAFSM.StateMachine
 const State = YAFSM.State
 
@@ -28,6 +29,7 @@ func _enter_tree():
 	var editor_base_control = get_editor_interface().get_base_control()
 	add_custom_type("StackPlayer", "Node", StackPlayer, StackPlayerIcon)
 	add_custom_type("StateMachinePlayer", "Node", StateMachinePlayer, StateMachinePlayerIcon)
+	add_custom_type("NetworkStateMachinePlayer", "Node", NetworkStateMachinePlayer, StateMachinePlayerIcon)
 	add_custom_type("StateMachine", "Resource", StateMachine, StateMachineIcon)
 
 	state_machine_editor.selection_stylebox.bg_color = editor_base_control.get_color("box_selection_fill_color", "Editor")

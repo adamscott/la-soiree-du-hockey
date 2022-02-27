@@ -53,6 +53,9 @@ func _load_state(state: Dictionary) -> void:
 
 func process_hockey_player() -> void:
 	sync_to_physics_engine()
+	
+	move_and_slide(SGFixed.from_float_vector2(Vector2.ZERO))
+	sync_to_physics_engine()
 
 
 func process_no_hockey_player() -> void:

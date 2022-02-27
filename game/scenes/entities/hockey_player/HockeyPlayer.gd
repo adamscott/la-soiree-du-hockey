@@ -1,7 +1,7 @@
 extends SGKinematicBody2D
 
 const YAFSM: = preload("res://addons/imjp94.yafsm/YAFSM.gd")
-const StateMachinePlayer: = YAFSM.StateMachinePlayer
+const NetworkStateMachinePlayer: = YAFSM.NetworkStateMachinePlayer
 const Player: = preload("res://scenes/entities/player/Player.gd")
 const HockeyPuck: = preload("res://scenes/entities/hockey_puck/HockeyPuck.gd")
 
@@ -12,9 +12,9 @@ var velocity: SGFixedVector2 = SGFixed.from_float_vector2(Vector2.ZERO)
 var acceleration: SGFixedVector2 = SGFixed.from_float_vector2(Vector2.ZERO)
 var direction: String = "n"
 
-var move_sm_stack: Array = []
-var play_type_sm_stack: Array = []
-var offense_sm_stack: Array = []
+var move_sm_stack: Array
+var play_type_sm_stack: Array
+var offense_sm_stack: Array
 var offense_sm_active: bool = false
 
 onready var hockey: SGFixedNode2D = $Hockey
@@ -22,9 +22,9 @@ onready var hockey: SGFixedNode2D = $Hockey
 onready var puck_position: SGFixedPosition2D = $Hockey/PuckPosition
 onready var puck_area: SGArea2D = $PuckArea
 
-onready var move_sm: StateMachinePlayer = $StateMachines/MoveStateMachine
-onready var play_type_sm: StateMachinePlayer = $StateMachines/PlayTypeStateMachine
-onready var offense_sm: StateMachinePlayer = $StateMachines/OffenseStateMachine
+onready var move_sm: NetworkStateMachinePlayer = $StateMachines/MoveStateMachine
+onready var play_type_sm: NetworkStateMachinePlayer = $StateMachines/PlayTypeStateMachine
+onready var offense_sm: NetworkStateMachinePlayer = $StateMachines/OffenseStateMachine
 
 onready var pass_timer: NetworkTimer = $Timers/PassTimer
 
@@ -61,17 +61,18 @@ func _on_PassTimer_timeout() -> void:
 
 func _ready() -> void:
 	friction = ProjectSettings["game/physics/ice/friction"]
+	move_sm.update()
+	play_type_sm.update()
 
 
 func _network_process(input: Dictionary) -> void:
-	backup_state_machines_stack()
 	update_position()
 	update_overlapping_bodies()
+	update_puck()
 	
 	if get_input().has("pass"):
-		prints("offense_sm.active", offense_sm.active)
 		offense_sm.set_trigger("pass")
-		
+	
 	update_state_machines()
 
 
@@ -81,11 +82,7 @@ func _save_state() -> Dictionary:
 		"fixed_position_y": fixed_position_y,
 		"velocity_x": velocity.x,
 		"velocity_y": velocity.y,
-		"direction": direction,
-		"move_stack": move_sm_stack,
-		"play_type_stack": play_type_sm_stack,
-		"offense_stack": offense_sm_stack,
-		"offense_sm_active": offense_sm_active
+		"direction": direction
 	}
 	
 	
@@ -110,11 +107,6 @@ func _load_state(state: Dictionary) -> void:
 	fixed_position = SGFixed.vector2(state["fixed_position_x"], state["fixed_position_y"])
 	hockey.update_float_transform()
 	direction = state["direction"]
-	
-	move_sm.stack = state["move_stack"]
-	play_type_sm.stack = state["play_type_stack"]
-	offense_sm.stack = state["offense_stack"]
-	offense_sm.active = state["offense_sm_active"]
 	
 	if state.has("velocity_x"):
 		velocity = SGFixed.vector2(state["velocity_x"], state["velocity_y"])
@@ -141,21 +133,12 @@ func _load_state(state: Dictionary) -> void:
 	sync_to_physics()
 
 
-func backup_state_machines_stack() -> void:
-	move_sm_stack = move_sm.stack
-	play_type_sm_stack = play_type_sm.stack
-	
-	if offense_sm.active:
-		offense_sm_stack = offense_sm.stack
-	else:
-		offense_sm_stack = []
-	
-	offense_sm_active = offense_sm.active
-
-
 func update_state_machines() -> void:
 	move_sm.set_param("velocity_length_squared", velocity.length_squared())
+	move_sm.update()
+	
 	play_type_sm.set_param("has_puck", hockey_puck != null)
+	play_type_sm.update()
 	
 	offense_sm.update()
 
@@ -280,6 +263,12 @@ func update_overlapping_bodies() -> void:
 			hockey_puck = overlapping_body
 
 
+func update_puck() -> void:
+	if hockey_puck:
+		if hockey_puck.current_hockey_player != self:
+			hockey_puck = null
+
+
 func update_animation() -> void:
 	var prefix: String
 	match move_sm.get_current():
@@ -300,7 +289,7 @@ func update_animation() -> void:
 					if animation_player.current_animation != target_animation:
 						animation_player.play(target_animation)
 				"Pass":
-					var target_animation: String = "%s_pass_%s" % [prefix, direction]
+					var target_animation: String = "pass_%s" % [direction]
 					if animation_player.current_animation != target_animation:
 						animation_player.play(target_animation)
 
