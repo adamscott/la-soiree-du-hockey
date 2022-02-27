@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://scenes/entities/hockey_puck/HockeyPuck.gd" type="Script" id=1]
+
+[sub_resource type="SGCircleShape2D" id=1]
+
+[node name="HockeyPuck" type="SGKinematicBody2D" groups=["network_sync"]]
+collision_layer = 2
+collision_mask = 2
+script = ExtResource( 1 )
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+color = Color( 0, 0, 0, 1 )
+polygon = PoolVector2Array( 6.61599, -14.5681, 15.8921, 6.11899, -6.20249, 13.6576, -15.0651, -7.94 )
+
+[node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="."]
+shape = SubResource( 1 )

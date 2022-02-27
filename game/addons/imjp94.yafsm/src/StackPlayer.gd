@@ -67,9 +67,8 @@ func reset(to=-1, event=ResetEventTrigger.ALL):
 			_:
 				pop()
 
-func set_stack(stack):
-	push_warning("Attempting to edit read-only state stack directly. " \
-		+ "Control state machine from setting parameters or call update() instead")
+func set_stack(val):
+	stack = val
 
 # Get duplicate of the stack being played
 func get_stack():

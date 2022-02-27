@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://main/Main.gd" type="Script" id=1]
 [ext_resource path="res://scenes/menus/network/NetworkMenu.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scenes/entities/hockey_player/HockeyPlayer.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/entities/hockey_puck/HockeyPuck.tscn" type="PackedScene" id=4]
 
 [node name="Main" type="Node"]
 script = ExtResource( 1 )
@@ -16,6 +17,11 @@ fixed_position_y = 16973824
 position = Vector2( 775, 242 )
 fixed_position_x = 50790400
 fixed_position_y = 15859712
+
+[node name="HockeyPuck" parent="." instance=ExtResource( 4 )]
+position = Vector2( 496, 187 )
+fixed_position_x = 32505856
+fixed_position_y = 12255232
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 anchor_right = 1.0

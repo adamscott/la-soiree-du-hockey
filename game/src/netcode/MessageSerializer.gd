@@ -2,7 +2,8 @@ extends "res://addons/godot-rollback-netcode/MessageSerializer.gd"
 
 
 enum HeaderFlags {
-	HAS_INPUT_VECTOR = 0b00000001
+	HAS_INPUT_VECTOR = 0b00000001,
+	IS_PASSING       = 0b00000010
 }
 
 func get_input_path_mapping(path: NodePath) -> int:
@@ -57,6 +58,9 @@ func serialize_input(all_input: Dictionary) -> PoolByteArray:
 		if input.has("input_vector"):
 			header |= HeaderFlags.HAS_INPUT_VECTOR
 		
+		if input.has("pass"):
+			header |= HeaderFlags.IS_PASSING
+		
 		buffer.put_u8(header)
 		if input.has("input_vector"):
 			var input_vector: SGFixedVector2 = input["input_vector"]
@@ -86,6 +90,8 @@ func unserialize_input(serialized: PoolByteArray) -> Dictionary:
 	var header: = buffer.get_u8()
 	if header & HeaderFlags.HAS_INPUT_VECTOR:
 		input["input_vector"] = SGFixed.vector2(buffer.get_64(), buffer.get_64())
+	if header & HeaderFlags.IS_PASSING:
+		input["pass"] = true
 	
 	all_input[path] = input
 	

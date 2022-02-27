@@ -13,6 +13,8 @@ func _on_Console_reset_connection() -> void:
 
 
 func _ready() -> void:
+	prints(SGFixed.PI_DIV_4)
+	
 	player_1.current_player = Players.player_1
 	player_2.current_player = Players.player_2
 	
